@@ -1,0 +1,47 @@
+{{##def.root = def.root || "." #}}
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="{{= it.root}}stylesheets/main.css"></link>
+  <script type="text/javascript" src="{{= it.root}}js/jquery-1.10.2.js"></script>
+  <script type="text/javascript" src="{{= it.root}}js/log4javascript.js"></script>
+  <script type="text/javascript" src="{{= it.root}}js/q.js"></script>
+  <script type="text/javascript" src="{{= it.root}}js/chuck.js"></script>
+  <script type="text/javascript" src="{{= it.document.code}}"></script>
+  <script type="text/javascript">
+    require(["chuck"], function (chuckModule) {
+      $(document).ready(function () {
+        var btn = $('#button'),
+            pre = $('#code'),
+            logger = log4javascript.getLogger(),
+            args = "{{= it.document.args || ""}}";
+
+        args = args ? args.split(":") : [];
+        logger.addAppender(new log4javascript.BrowserConsoleAppender());
+        /*chuckModule.setLogger(logger);*/
+        logger.setLevel(log4javascript.Level.DEBUG);
+        pre.text(code);
+        btn.click(function () {
+          var chuck = new chuckModule.Chuck();
+          console.debug("Executing program");
+          if (args.length > 0) {
+            console.debug("With arguments:", args);
+          }
+          chuck.execute(code, args)
+              .done(function () {
+                console.log("The program finished playing");
+              });
+        });
+
+      });
+    });
+  </script>
+  <title>ChucKJS {{= it.document.title}}</title>
+</head>
+<body>
+<h1>ChucKJS {{= it.document.title}}</h1>
+{{= it.document }}
+<pre id="code"></pre>
+<input id="button" type="button" value="Play">
+</body>
+</html>
