@@ -52,7 +52,14 @@ define(['require',
                     console.log ("Intercepted save command, editor is", editor);
                     this.code = editor.getValue();
                     console.log ("And code is", this.code);
-                    this.chuck.execute(this.code).done(function () { console.log("The program finished playing"); });
+                    try {
+                        this.chuck.execute(this.code).done(function () {
+                            console.log("The program finished playing");
+                        });
+                    }
+                    catch (e) {
+                        console.log ("Whoops, exception from ChucK!");
+                    }
                 }.bind(this),
                 readOnly: true // false if this command should not apply in readOnly mode
             });
@@ -70,6 +77,7 @@ define(['require',
             });
 
             var saveState = function () {
+                this.code = editor.getValue();
                 return { data: this.code };
             };
             initArgs.hostInterface.setSaveState (saveState.bind (this));
